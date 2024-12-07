@@ -1,6 +1,6 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-name: Build Workflow
+name: HelloWorld
 on:
   push:
     branches:
@@ -17,3 +17,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Run build
         run: echo "Building project..."
+      - name: Debug Secrets
+        run: echo "Secrets loaded for ${{ secrets.DOCKER_USERNAME }}"
+      - name: Debug Secrets2
+        run: echo "Secrets loaded for ${{ secrets.DOCKER_PASSWORD }}"        
+      
+        
