@@ -1,30 +1,14 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-
+name: HelloWorld
 on:
-  workflow_call:
-    inputs:
-      push:
-        description: Should the images be pushed
-        default: false
-        required: false
-        type: boolean
-      version:
-        description: The version used when tagging the image
-        default: 'dev'
-        required: false
-        type: string
-      dockerhub_repo:
-        description: Docker Hub repository
-        default: 'otel/demo'
-        required: false
-        type: string
-      ghcr_repo:
-        description: GHCR repository
-        default: 'ghcr.io/open-telemetry/demo'
-        required: false
-        type: string
-
+  push:
+    branches:
+      - main
+    tags:
+      - 'rollback*' # 监听以 rollback 开头的标签
+  workflow_dispatch: # 支持手动触发
+  
 jobs:
   protobufcheck:
     runs-on: ubuntu-latest
@@ -152,11 +136,7 @@ jobs:
         run: |
           DOCKERFILE_DIR=$(dirname ${{ matrix.file_tag.file }})
           FILES_CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- $DOCKERFILE_DIR)
-          FORCE_PUSH=${{ inputs.push }}
-          if [ "$FORCE_PUSH" = true ]; then
-            echo "Force push is enabled, proceeding with build."
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          elif [ -z "$FILES_CHANGED" ]; then
+          if [ -z "$FILES_CHANGED" ]; then
             echo "No changes in ${{ matrix.file_tag.context }}, skipping build."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
@@ -169,26 +149,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ inputs.push }}
-      - name: Debug Secrets
-        run: |
-          echo "DOCKER_USERNAME is ${DOCKER_USERNAME}" | wc -c
-          echo "DOCKER_PASSWORD is ${DOCKER_PASSWORD}" | wc -c
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}        
+        if: true
       - name: Log in to Docker Hub  
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        if: ${{ inputs.push }}
+        if: true
       - name: Log in to Docker Hub2  
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        if: ${{ inputs.push }}        
+        if: true        
       - name: Set up QEMU
         if: ${{ matrix.file_tag.setup-qemu }}
         uses: docker/setup-qemu-action@v3
@@ -196,10 +169,6 @@ jobs:
           image: tonistiigi/binfmt:master
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [worker.oci]
-            max-parallelism = 2
       - name: Matrix Build and push demo images
         if: steps.check_changes.outputs.skip == 'false'
         uses: docker/build-push-action@v6.10.0
@@ -207,15 +176,15 @@ jobs:
           context: ${{ matrix.file_tag.context }}
           file: ${{ matrix.file_tag.file }}
           platforms: linux/amd64,linux/arm64
-          push: ${{ inputs.push }}
+          push: true
           build-args: |
             OTEL_JAVA_AGENT_VERSION=${{ env.OTEL_JAVA_AGENT_VERSION }}
             OPENTELEMETRY_CPP_VERSION=${{ env.OPENTELEMETRY_CPP_VERSION }}
             TRACETEST_IMAGE_VERSION=${{ env.TRACETEST_IMAGE_VERSION }}
           tags: |
-            ${{ inputs.dockerhub_repo }}:${{ inputs.version }}-${{matrix.file_tag.tag_suffix }}
-            ${{ inputs.dockerhub_repo }}:latest-${{matrix.file_tag.tag_suffix }}
-            ${{ inputs.ghcr_repo }}:${{ inputs.version }}-${{ matrix.file_tag.tag_suffix }}
-            ${{ inputs.ghcr_repo }}:latest-${{ matrix.file_tag.tag_suffix }}
+            otel/demo:dev-${{matrix.file_tag.tag_suffix }}
+            otel/demo:latest-${{matrix.file_tag.tag_suffix }}
+            ghcr.io/open-telemetry/demo:dev-${{ matrix.file_tag.tag_suffix }}
+            ghcr.io/open-telemetry/demo:latest-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
