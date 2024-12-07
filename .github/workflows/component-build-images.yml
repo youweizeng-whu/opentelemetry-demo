@@ -170,7 +170,14 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ inputs.push }}
-      - name: Log in to Docker Hub
+      - name: Debug Secrets
+        run: |
+          echo "DOCKER_USERNAME is ${DOCKER_USERNAME}" | wc -c
+          echo "DOCKER_PASSWORD is ${DOCKER_PASSWORD}" | wc -c
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}        
+      - name: Log in to Docker Hub  
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
