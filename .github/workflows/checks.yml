@@ -13,7 +13,7 @@ jobs:
   build_images:
     uses: ./.github/workflows/component-build-images.yml
     with:
-      push: false
+      push: true
       version: 'dev'
 
   markdownlint:
