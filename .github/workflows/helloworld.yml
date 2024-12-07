@@ -1,0 +1,17 @@
+name: Build Workflow
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'rollback*' # 监听以 rollback 开头的标签
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run build
+        run: echo "Building project..."
