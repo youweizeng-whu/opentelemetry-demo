@@ -176,7 +176,7 @@ jobs:
           context: ${{ matrix.file_tag.context }}
           file: ${{ matrix.file_tag.file }}
           platforms: linux/amd64,linux/arm64
-          push: false # true normally
+          push: true
           build-args: |
             OTEL_JAVA_AGENT_VERSION=2.9.0
             OPENTELEMETRY_CPP_VERSION=1.17.0
@@ -187,6 +187,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
   run_tests:
+    needs: build_and_push_images
     runs-on: ubuntu-latest
     name: "Run Test"
     if: true
@@ -201,6 +202,7 @@ jobs:
         done
         echo "Testing completed."      
   deploy:
+    needs: run_tests
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
