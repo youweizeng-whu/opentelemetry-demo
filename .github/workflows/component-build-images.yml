@@ -170,13 +170,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Matrix Build and push demo images
-        if: steps.check_changes.outputs.skip == 'false'
+        if: true
         uses: docker/build-push-action@v6.10.0
         with:
           context: ${{ matrix.file_tag.context }}
           file: ${{ matrix.file_tag.file }}
           platforms: linux/amd64,linux/arm64
-          push: ${{ steps.check_changes.outputs.skip == 'false' }}  # This ensures push only happens if skip is false
+          push: true
           build-args: |
             OTEL_JAVA_AGENT_VERSION=2.9.0
             OPENTELEMETRY_CPP_VERSION=1.17.0
@@ -186,4 +186,14 @@ jobs:
             youweizeng/otel:latest-${{matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
+  run_tests:
+    runs-on: ubuntu-latest
+    name: "Run CI"
+    if: github.event.review.state == 'APPROVED'
+    steps:
+      - name: check out code
+        uses: actions/checkout@v4
+      - name: run tracetesting
+        run: |
+          make build && docker system prune -f && make run-tracetesting          
        
