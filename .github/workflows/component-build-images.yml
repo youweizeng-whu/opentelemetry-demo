@@ -196,4 +196,25 @@ jobs:
       - name: run tracetesting
         run: |
           make build && docker system prune -f && make run-tracetesting          
-       
+  execute_command:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Run Command on EC2 Instance
+      run: |
+        aws ssm send-command \
+          --document-name "AWS-RunShellScript" \
+          --targets "Key=instanceids,Values=i-0fd0d80e126b049ce" \
+          --parameters 'commands=["kubectl apply -f /home/ec2-user/opentelemetry-demo/kubernetes/opentelemetry-demo.yaml"]' \
+          --timeout-seconds 600 \
+          --max-concurrency "50" \
+          --max-errors "0"       
