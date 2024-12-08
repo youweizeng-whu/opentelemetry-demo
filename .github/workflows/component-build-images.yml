@@ -186,3 +186,18 @@ jobs:
             youweizeng/otel:latest-${{matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
+
+      - name: Test Docker Pull
+        run: |
+          TAG_TO_TEST="latest-${{ matrix.file_tag.tag_suffix }}"
+          IMAGE="youweizeng/otel:$TAG_TO_TEST"
+          echo "Testing Docker Pull for $IMAGE"
+          docker pull $IMAGE
+          if [ $? -eq 0 ]; then
+            echo "SUCCESS: Docker pull was successful for image $IMAGE"
+          else
+            echo "ERROR: Docker pull failed for image $IMAGE"
+            exit 1
+          fi
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled          
