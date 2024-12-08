@@ -170,13 +170,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Matrix Build and push demo images
-        if: true
+        if: steps.check_changes.outputs.skip == 'false'
         uses: docker/build-push-action@v6.10.0
         with:
           context: ${{ matrix.file_tag.context }}
           file: ${{ matrix.file_tag.file }}
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ steps.check_changes.outputs.skip == 'false' }}  # This ensures push only happens if skip is false
           build-args: |
             OTEL_JAVA_AGENT_VERSION=2.9.0
             OPENTELEMETRY_CPP_VERSION=1.17.0
