@@ -182,9 +182,9 @@ jobs:
             OPENTELEMETRY_CPP_VERSION=1.17.0
             TRACETEST_IMAGE_VERSION=v1.7.1
           tags: |
-            otel/demo:dev-${{matrix.file_tag.tag_suffix }}
-            otel/demo:latest-${{matrix.file_tag.tag_suffix }}
-            ghcr.io/open-telemetry/demo:dev-${{ matrix.file_tag.tag_suffix }}
-            ghcr.io/open-telemetry/demo:latest-${{ matrix.file_tag.tag_suffix }}
+            youweizeng/otel:dev-${{matrix.file_tag.tag_suffix }}
+            youweizeng/otel:latest-${{matrix.file_tag.tag_suffix }}
+            # ghcr.io/open-telemetry/demo:dev-${{ matrix.file_tag.tag_suffix }}
+            # ghcr.io/open-telemetry/demo:latest-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
