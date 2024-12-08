@@ -184,7 +184,5 @@ jobs:
           tags: |
             youweizeng/otel:dev-${{matrix.file_tag.tag_suffix }}
             youweizeng/otel:latest-${{matrix.file_tag.tag_suffix }}
-            # ghcr.io/open-telemetry/demo:dev-${{ matrix.file_tag.tag_suffix }}
-            # ghcr.io/open-telemetry/demo:latest-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
