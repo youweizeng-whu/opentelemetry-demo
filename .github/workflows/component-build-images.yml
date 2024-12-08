@@ -178,13 +178,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            OTEL_JAVA_AGENT_VERSION=${{ env.OTEL_JAVA_AGENT_VERSION }}
-            OPENTELEMETRY_CPP_VERSION=${{ env.OPENTELEMETRY_CPP_VERSION }}
-            TRACETEST_IMAGE_VERSION=${{ env.TRACETEST_IMAGE_VERSION }}
+            OTEL_JAVA_AGENT_VERSION=2.9.0
+            OPENTELEMETRY_CPP_VERSION=1.17.0
+            TRACETEST_IMAGE_VERSION=v1.7.1
           tags: |
-            ${{ inputs.dockerhub_repo }}:${{ inputs.version }}-${{matrix.file_tag.tag_suffix }}
-            ${{ inputs.dockerhub_repo }}:latest-${{matrix.file_tag.tag_suffix }}
-            ${{ inputs.ghcr_repo }}:${{ inputs.version }}-${{ matrix.file_tag.tag_suffix }}
-            ${{ inputs.ghcr_repo }}:latest-${{ matrix.file_tag.tag_suffix }}
+            otel/demo:dev-${{matrix.file_tag.tag_suffix }}
+            otel/demo:latest-${{matrix.file_tag.tag_suffix }}
+            ghcr.io/open-telemetry/demo:dev-${{ matrix.file_tag.tag_suffix }}
+            ghcr.io/open-telemetry/demo:latest-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
